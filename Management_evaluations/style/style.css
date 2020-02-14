@@ -1,0 +1,8 @@
+.oculto { display: none; } 
+.visible { display: block; }
+table th,table td{
+ text-align:center;
+}
+.color select option[danger]:checked{
+    color:#01afd2;
+}

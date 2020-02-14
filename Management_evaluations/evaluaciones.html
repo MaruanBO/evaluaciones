@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	
+	<head>
+    	<meta charset="utf-8">
+		<meta name="viewport" content="widt=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="style/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="style/style.css">
+	    <link href="jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet">
+	</head>
+
+	<body>
+	<div class="container">	
+		<label>Cursos y grupos:</label>
+		<select class="w-50 browser-default custom-select" id="cursos"></select>
+
+			<ul class="nav nav-tabs">
+			  <li class="nav-item">
+			    <a class="nav-link active" data-toggle="tab" id="eva" href="#">Evaluacion</a>
+			  </li>
+			  <li class="nav-item">
+			    <a class="nav-link" data-toggle="tab" id="ause" href="#">Ausencias</a>
+			  </li>
+			</ul>
+			<div class="tab-content">
+			  <div class="tab-pane fade show active" role="tabpanel" id="accordion-1"></div>
+			  <div class="tab-pane fade show active" role="tabpanel" id="tab-ausencias"></div>
+			</div>
+			<div id="add_dialog">
+			  <form id="formT">
+			      <br>Redes:<br>
+			      <input type="text" id="newRedes"/>
+			      <br>Equipos:<br>
+			      <input type="text" id="newEquipos"/>
+			      <br>Fol:<br>
+			      <input type="text" id="newFol"/>
+			      <br>Sistemas:<br>
+			      <input type="text" id="newSistemas"/>
+			  </form>
+			</div>
+
+			<input type='button'  class="btn btn-primary" value='Guardar' onclick="sorry()" />
+ 	</div>
+
+	<script type="text/javascript">
+	
+	document.getElementById("add_dialog").style.display = 'none';
+	
+	addEventListener("load", loadDoc);
+    addEventListener("load", jsonLoadEvaluation);
+    addEventListener("load", jsonLoadAusencias);
+
+
+    function loadDoc() {
+
+        if(window.XMLHttpRequest) {
+            xhttp = new XMLHttpRequest();
+        }
+            xhttp.onreadystatechange = showStatus;
+            xhttp.open("GET", "cursos.xml", true);
+            xhttp.send();
+    }
+    
+    function showStatus() {
+        if (this.readyState == 4 && this.status == 200) {
+            loadResponse(this);       
+        } 
+    }
+    
+    function loadResponse(xml) {
+        var i;
+        var xmlDoc = xml.responseXML;
+        var table="";
+        table+="<option selected>Selecciona un curso</option>"
+        var select = xmlDoc.getElementsByTagName("CURSO");
+            
+            for (i = 0; i < select.length; i++) { 
+                table += "<option value='"+select[i].getElementsByTagName("GRUPO")[0].textContent+"'>"+
+                select[i].getElementsByTagName("GRUPO")[0].textContent +
+                "</option>";
+            }
+
+            document.getElementById("cursos").innerHTML = table;
+    }
+
+
+
+    function jsonLoadAusencias () {
+    	
+	   	$( "#ause" ).click(function() {
+
+		  	var cursoSelected = document.getElementById("cursos").value;
+					
+			if (cursoSelected == "1GM") {  	
+		       	$.getJSON('1GM.json', function(json) {	
+		       		$('#tab-ausencias').html(
+		       			'<table class="table table-striped">'+
+			            '<thead><tr><th scope="col">Nombre y apellidos</th>'+
+			            '<th scope="col">Justificadas</th>'+
+			            '<th scope="col">Injustificadas</th>'+
+			            '<th scope="col">Retraso</th></tr></thead>'+
+			            '<tbody><tr><th>'+json.ALUMNO.NOMBRE[0]+'</th>'+
+			            '<div class="class="form-check">'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '</div>'+
+			            '<tr><th>'+json.ALUMNO.NOMBRE[1]+'</th>'+
+			            '<div class="class="form-check">'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '</div>'
+		       		);
+				});
+
+				document.getElementById("accordion-1").style.display = 'none';
+				document.getElementById("tab-ausencias").style.display = 'block';
+			}
+
+			if (cursoSelected == "2HS") {  	
+		       	$.getJSON('2HS.json', function(json) {	
+		       		$('#tab-ausencias').html(
+		       			'<table class="table table-striped">'+
+			            '<thead><tr><th scope="col">Nombre y apellidos</th>'+
+			            '<th scope="col">Justificadas</th>'+
+			            '<th scope="col">Injustificadas</th>'+
+			            '<th scope="col">Retraso</th></tr></thead>'+
+			            '<tbody><tr><th>'+json.ALUMNO.NOMBRE[0]+'</th>'+
+			            '<div class="class="form-check">'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '</div>'+
+			            '<tr><th>'+json.ALUMNO.NOMBRE[1]+'</th>'+
+			            '<div class="class="form-check">'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '<th><input class="form-check-input" type="checkbox"></th>'+
+			            '</div>'
+		       		);
+				});
+				document.getElementById("accordion-1").style.display = 'none';
+				document.getElementById("tab-ausencias").style.display = 'block';
+			}
+		});
+   	};
+
+    function promptModif () {
+	
+		redes = document.getElementById("redes");
+		sistemas = document.getElementById("sistemas");
+		equipos = document.getElementById("equipos");
+		fol = document.getElementById("fol");
+
+	  	newRedes = document.getElementById("newRedes").value;
+		newSistemas = document.getElementById("newSistemas").value;
+		newFol = document.getElementById("newFol").value;
+		newEquipos= document.getElementById("newEquipos").value;
+
+		$('#add_dialog').dialog({
+		  modal: true,
+		  buttons: {
+		    "Modificar": function() {
+		    	$("#redes").html(newRedes);
+		    	$("#redess").html(newSistemas);
+		    	$("#redesss").html(newSistemas);
+		    	$("#redesssss").html(newSistemas);
+		    	$("#sistemas").html(newSistemas);
+		    	$("#sistemass").html(newSistemas);
+		    	$("#sistemasss").html(newSistemas);
+		    	$("#sistemassss").html(newSistemas);
+		    	$("#equipos").html(newEquipos);
+		    	$("#equiposs").html(newEquipos);
+		    	$("#equiposss").html(newEquipos);
+		    	$("#equipossss").html(newEquipos);
+		    	$("#fol").html(newFol);
+		    	$("#foll").html(newSistemas);
+		    	$("#folll").html(newSistemas);
+		    	$("#follll").html(newSistemas);
+        		$(this).dialog('close');
+		    },
+		    "CANCEL": function() {
+		      $(this).dialog('close');
+		    }
+		  }
+		});
+
+		redes = "";
+    }
+
+    function jsonLoadEvaluation() {
+
+	        $("#eva").click(function(){
+
+	        var cursoSelected = document.getElementById("cursos").value;
+				
+				if (cursoSelected == "1GM") {
+		        	
+		        	$.getJSON('1GM.json', function(json) {
+			        	
+			        	$('#accordion-1').html('<h3>' + json.ALUMNO.NOMBRE[0] + '</h3>');
+			        	
+			        	$('#accordion-1').append(
+			            	'<div>'+
+			            	'<table class="table table-striped">'+
+			            	'<thead><tr><th scope="col">Redes</th>'+
+			            	'<th scope="col">Equipos</th>'+
+			            	'<th scope="col">Fol</th>'+
+			            	'<th scope="col">Sistemas</th></tr></thead>'+
+			            	'<tbody><tr><th id="redes">'+json.ALUMNO.REDES[0]+'</th>'+
+			            	'<th id="equipos">'+json.ALUMNO.EQUIPOS[0]+'</th>'+
+			            	'<th id="fol">'+json.ALUMNO.FOL[0]+'</th>'+
+			            	'<th id="sistemas">'+json.ALUMNO.SISTEMAS[0]+'</th>'+
+			            	'<th><input type="button"  class="btn btn-primary" onclick="promptModif()" value="Modificar"/></th></tr></tbody>'+
+			            	'</div>'
+			            );
+
+			            $('#accordion-1').append('<h3>' + json.ALUMNO.NOMBRE[1] + '</h3>');
+			        	
+			        	$('#accordion-1').append(
+			            	'<div>'+
+			            	'<table class="table table-striped">'+
+			            	'<thead><tr><th scope="col">Redes</th>'+
+			            	'<th scope="col">Equipos</th>'+
+			            	'<th scope="col">Fol</th>'+
+			            	'<th scope="col">Sistemas</th></tr></thead>'+
+			            	'<tbody><tr><th id="redess">'+json.ALUMNO.REDES[1]+'</th>'+
+			            	'<th id="equiposs">'+json.ALUMNO.EQUIPOS[1]+'</th>'+
+			            	'<th id="foll">'+json.ALUMNO.FOL[1]+'</th>'+
+			            	'<th id="sistemass">'+json.ALUMNO.SISTEMAS[1]+'</th>'+
+			            	'<th><input type="button" onclick="promptModif()" class="btn btn-primary" value="Modificar"/></th></tr></tbody>'+
+			            	'</div>'
+			            );		
+
+				        if ($("#accordion-1").hasClass('ui-accordion')) {
+						    $("#accordion-1").accordion('destroy');
+						}
+
+			            $('#accordion-1').accordion({
+						    collapsible  : true,
+						    active       : true,
+						    navigation   : true,
+						});
+				    });
+
+				    document.getElementById("accordion-1").style.display = 'block';
+				    document.getElementById("tab-ausencias").style.display = 'none';
+				};
+				
+				if (cursoSelected == "2HS") {
+		        	$.getJSON('2HS.json', function(json) {
+			        	$('#accordion-1').html('<h3>' + json.ALUMNO.NOMBRE[0] + '</h3>');
+
+			        	$('#accordion-1').append(
+			            	'<div>'+
+			            	'<table class="table table-striped">'+
+			            	'<thead><tr><th scope="col">Redes</th>'+
+			            	'<th scope="col">Equipos</th>'+
+			            	'<th scope="col">Fol</th>'+
+			            	'<th scope="col">Sistemas</th></tr></thead>'+
+			            	'<tbody><tr><th id="redesss">'+json.ALUMNO.REDES[0]+'</th>'+
+			            	'<th id="equiposss">'+json.ALUMNO.EQUIPOS[0]+'</th>'+
+			            	'<th id="folll">'+json.ALUMNO.FOL[0]+'</th>'+
+			            	'<th id="sistemasss">'+json.ALUMNO.SISTEMAS[0]+'</th>'+
+			            	'<th><input type="button"  class="btn btn-primary" onclick="promptModif()" value="Modificar"/></th></tr></tbody>'+
+			            	'</div>'
+			            );
+
+			            $('#accordion-1').append('<h3>' + json.ALUMNO.NOMBRE[1] + '</h3>');
+			        	
+			        	$('#accordion-1').append(
+			            	'<div>'+
+			            	'<table class="table table-striped">'+
+			            	'<thead><tr><th scope="col">Redes</th>'+
+			            	'<th scope="col">Equipos</th>'+
+			            	'<th scope="col">Fol</th>'+
+			            	'<th scope="col">Sistemas</th></tr></thead>'+
+			            	'<tbody><tr><th id="redessss">'+json.ALUMNO.REDES[1]+'</th>'+
+			            	'<th id="equipossss">'+json.ALUMNO.EQUIPOS[1]+'</th>'+
+			            	'<th id="follll">'+json.ALUMNO.FOL[1]+'</th>'+
+			            	'<th id="sistemassss">'+json.ALUMNO.SISTEMAS[1]+'</th>'+
+			            	'<th ><input type="button"  class="btn btn-primary" onclick="promptModif()" value="Modificar"/></th></tr></tbody>'+
+			            	'</div>'
+			            );
+
+				        if ($("#accordion-1").hasClass('ui-accordion')) {
+						    $("#accordion-1").accordion('destroy');
+						};
+			            
+			            $("#accordion-1").accordion({
+						    collapsible  : true,
+						    active       : false,
+						    navigation   : true,
+						});
+				    });
+
+				   	document.getElementById("accordion-1").style.display = 'block';
+				    document.getElementById("tab-ausencias").style.display = 'none';
+				};
+			});			
+    	};
+
+    	function sorry () {
+    	 	alert("FATAL ERROR")
+    	 } 
+
+	</script>
+	<script type="text/javascript" src="bootstrap.min.js"></script> 
+	<script src="style/bootstrap.min.js"></script> 
+	<script src="jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+	<script src="jquery-ui-1.12.1/jquery-ui.js"></script>
+	</body>
+
+</html>
