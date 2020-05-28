@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+	
+	<head>
+
+    	<meta charset="utf-8">
+		<meta name="viewport" content="widt=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="style/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="style/style.css">
+		<title> </title>
+
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+		  <div class="container">
+		    <a class="navbar-brand" href="#">
+		          <img src="" alt=""> <!-- Logo -->
+		        Agenda
+		    </a>
+		    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+		          <span class="navbar-toggler-icon"></span>
+		        </button>
+		    <div class="collapse navbar-collapse" id="navbarResponsive">
+		      <ul class="navbar-nav ml-auto">
+		        <li class="nav-item active">
+		          <a class="nav-link" href="../index.html">Inicio</a>
+		      </ul>
+		    </div>
+		  </div>
+		</nav>
+
+		<script type="text/javascript">
+
+		// Variables globales
+		var descA = [];
+		var dateA = [];
+		var timeA = [];
+
+		// He añadido la funcion de modificar con verificaciones, junto a la de confirmación al eliminar, he realizado mejoras en el codigo en cuanto a borrado, verificaciones de errores, tiempo restante etc..
+
+		function Diary(){
+
+			desc = document.getElementById('descF');
+			date = document.getElementById('dateF');
+			time = document.getElementById('timeF');
+
+			errorDesc = document.getElementById("errorDesc");
+			errorDate = document.getElementById("errorDate");
+			errorTime = document.getElementById("errorTime");
+			timeLeft = document.getElementById("timeLeft");
+
+			if(desc.value == ''){
+				errorDesc.innerHTML="Descripción vacia";
+				desc.focus();
+				return false;
+			}
+
+			if(date.value == ''){
+				errorDate.innerHTML="Fecha vacia";
+				date.focus();
+				return false;
+			}
+
+			if(time.value == ''){
+				errorTime.innerHTML="Hora vacia";
+				time.focus();
+				return false;
+			}
+			
+			// Calculo de tiempo restante de la cita.
+ 			var inicio = new Date(date.value);
+ 			var fin = new Date();
+ 			var day_as_milliseconds = 86400000;
+			var diff = fin.getTime() -  inicio.getTime(); 
+			var diff_in_days = diff / day_as_milliseconds;
+			var mil_diff = diff_in_days * 1000;
+			// Notificación en segundos 'seconds_diff'
+			setTimeout(timeDiary,mil_diff);
+
+			timeLeft.innerHTML="Su cita expira dentro de\n"+Math.round(diff_in_days)+"\ndias";
+		
+
+			descA.push(desc.value);
+			desc.value = '';
+
+			dateA.push(date.value);
+			date.value = '';
+
+			timeA.push(time.value);
+			time.value = '';
+         
+            var tdDesc = document.getElementById('tdDesc');
+            var tdDate = document.getElementById('tdDate');
+            var tdTime = document.getElementById('tdTime');
+            var modify = document.createElement("INPUT");
+            var checkbox = document.createElement("INPUT");
+			
+			checkbox.setAttribute("type", "checkbox");
+			checkbox.setAttribute("id", "delCheck");
+			
+			document.getElementById("check").appendChild(checkbox);
+	
+			modify.setAttribute("type", "button");
+			modify.setAttribute("value", "Modificar");
+			modify.setAttribute("id", "modify");
+			modify.setAttribute("class", "btn btn-primary")
+			modify.setAttribute("onclick", "getFormDiary()");
+
+			document.getElementById("sub").appendChild(modify);
+
+            for(var i = 0; i < descA.length; i++){
+                tdDesc.innerHTML = tdDesc.innerHTML + descA[i] + "<br><br><br>";
+            }
+            for(var i = 0; i < descA.length; i++){
+                tdDate.innerHTML = tdDate.innerHTML + dateA[i] + "<br><br><br>";
+            }
+            for(var i = 0; i < descA.length; i++){
+	            tdTime.innerHTML = tdTime.innerHTML + timeA[i] + "<br><br><br>";
+            }
+
+			document.getElementById("sub").innerHTML+="<br><br>";
+ 			document.getElementById("check").innerHTML+="<br><br><br>";	
+
+		}
+
+
+		function timeDiary () {		
+			alert("Tu cita registrada en la fecha " + dateA[0] + " ha expirado")
+		}
+
+		function delDiary () {
+
+			errorCheck = document.getElementById("errorCheck");
+ 			var getCheck = document.getElementById("delCheck");
+
+ 			if (getCheck.checked == false) {
+ 				errorCheck.innerHTML="Debes de seleccionar el campo a eliminar"
+				return false;
+ 			} 
+
+  			
+ 			var delDesc = document.getElementById("tdDesc");
+ 			delDesc.removeChild(delDesc.childNodes[0]);
+
+ 			var delDate = document.getElementById("tdDate");
+ 			delDate.removeChild(delDate.childNodes[0]);
+
+ 			var delTime = document.getElementById("tdTime");
+ 			delTime.removeChild(delTime.childNodes[0]);
+
+  			var delCheck = document.getElementById("check");
+ 			delCheck.removeChild(delCheck.childNodes[0]);
+
+  			var delSub = document.getElementById("sub");
+ 			delSub.removeChild(delSub.childNodes[0]);
+
+ 			timeLeft = document.getElementById("timeLeft");
+ 			timeLeft.style.display = 'none';
+
+ 			confirm("Estás seguro de querar eliminar esta cita?");			
+		}
+
+		function getFormDiary () {
+			var desc = document.createElement("INPUT");
+			desc.setAttribute("type", "text");
+			desc.setAttribute("id", "modDesc");
+			desc.setAttribute("class", "form-control col-4");
+			desc.setAttribute("placeholder","Descripción")
+			document.getElementById("modValues").appendChild(desc);
+
+			var modify = document.createElement("INPUT");
+			modify.setAttribute("type", "button");
+			modify.setAttribute("value", "Modificar");
+			modify.setAttribute("id", "buttonMod");
+			modify.setAttribute("class", "btn btn-primary");
+			modify.setAttribute("onclick", "modDiary()");
+			document.getElementById("modButton").appendChild(modify);
+		}
+
+		function modDiary () {
+
+			modDes = document.getElementById("modDesc");
+			errorValues = document.getElementById("errorValues");
+			
+			if(modDesc.value == ''){
+				errorValues.innerHTML="Descripción vacia";
+				modDes.focus();
+				return false;
+			}
+
+			buttonModDes = document.getElementById("buttonMod");
+			descA = modDesc.value;
+ 			document.getElementById("tdDesc").innerHTML = descA;
+ 			modDesc.style.display = 'none';
+ 			buttonModDes.style.display = 'none';
+ 			errorValues.style.display = 'none';
+
+		}
+
+		</script>
+
+	</head>
+ 
+	<body>
+		<div class="container">
+			<br><br>
+			<h2>Agenda</h2>
+			<br>
+			<form >
+			<div class="form-group">
+	    		<label  class="control-label" for="descF">Descripción:</label>
+				<p  class="text-danger" id="errorDesc"></p>
+				<input type='text' placeholder="Descripción" class="form-control" id='descF' /><br>
+				<div class="invalid-feedback">Example invalid feedback text</div>
+			</div>
+			<div class="form-group">
+	    		<label for="date">Fecha:</label>
+				<p class="text-danger" id="errorDate"></p>
+				<input  type="date" class="form-control" id='dateF'  /><br>
+			</div>
+
+			<div class="form-group">
+	    	<label for="time">Hora:</label>
+			<p class="text-danger" id="errorTime"></p>
+			<input type='time' class="form-control" id='timeF'/><br>
+			</form>
+			</div>
+
+			<table class="table" id="table">
+			  <thead>
+			    <tr>
+			      <th scope="col">Descripción</th>
+			      <th scope="col">Fecha</th>
+			      <th scope="col">Hora</th>
+			      <th scope="col">Eliminar?</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr>
+			      <td id="tdDesc"></td>
+			      <td id="tdDate"></td>
+			      <td id="tdTime"></td>
+			      <td id="check"></td>
+			      <td id="sub"></td>
+			    </tr>
+			  </tbody>
+			</table>
+			<p class="text-danger" id="errorCheck"></p>
+			<p class="text-success" id="timeLeft"></p>
+
+			<div id="modValues"></div><br>
+			<p class="text-danger" id="errorValues"></p>
+			<div id="modButton"></div><br>
+			<p class="text-success" id="modAdv"></p><br>
+			<input type='button'  class="btn btn-primary" onclick="Diary()" value='Nueva cita'/>
+			<input type='button'  class="btn btn-primary" onclick="delDiary()" value='Eliminar'/>
+		</div>
+	</body>
+
+	<script type="text/javascript" src="bootstrap.min.js"></script> 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>﻿
+	<script src="style/bootstrap.min.js"></script> 
+
+<footer class="page-footer font-small">
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3 bg-dark text-white bg-dark">
+    <p class="text-center"> © 2019 Copyright: Maruan Boukhriss</p>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+
+</html>
